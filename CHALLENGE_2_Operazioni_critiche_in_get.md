@@ -1,3 +1,4 @@
+Spiegazione fatta con AI di quello che ho fatto passo per passo in md
 # Challenge 2: Operazioni Critiche in GET - Report Implementazione
 
 ## 📋 Riepilogo Challenge
