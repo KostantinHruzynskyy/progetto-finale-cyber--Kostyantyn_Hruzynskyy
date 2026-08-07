@@ -27,8 +27,8 @@ Route::middleware('throttle:careers')->group(function(){
     Route::post('/careers/submit', [PublicController::class, 'careersSubmit'])->name('careers.submit');
 });
 
-// Route per (chi fa scrittori)
-Route::middleware('writer')->group(function(){
+// Route per scrittori - con logging operazioni critiche
+Route::middleware(['log.critical','writer'])->group(function(){
     Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles/store', [ArticleController::class, 'store'])->name('articles.store');
     Route::get('/writer/dashboard', [WriterController::class, 'dashboard'])->name('writer.dashboard');
@@ -37,16 +37,16 @@ Route::middleware('writer')->group(function(){
     Route::delete('/articles/destroy/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
 
-// Route per i revisori
-Route::middleware('revisor')->group(function(){
+// Route per i revisori - con logging operazioni critiche
+Route::middleware(['log.critical','revisor'])->group(function(){
     Route::get('/revisor/dashboard', [RevisorController::class, 'dashboard'])->name('revisor.dashboard');
     Route::post('/revisor/{article}/accept', [RevisorController::class, 'acceptArticle'])->name('revisor.acceptArticle');
     Route::post('/revisor/{article}/reject', [RevisorController::class, 'rejectArticle'])->name('revisor.rejectArticle');
     Route::post('/revisor/{article}/undo', [RevisorController::class, 'undoArticle'])->name('revisor.undoArticle');
 });
 
-// Route per gli amministratori
-Route::middleware(['admin','admin.local'])->group(function(){
+// Route per gli amministratori - con logging operazioni critiche
+Route::middleware(['log.critical','admin','admin.local'])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     // Operazioni critiche di gestione ruoli - protette da CSRF con metodo PATCH
     Route::patch('/admin/{user}/set-admin', [AdminController::class, 'setAdmin'])->name('admin.setAdmin');

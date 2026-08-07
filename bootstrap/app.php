@@ -17,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => App\Http\Middleware\UserIsAdmin::class,
             'revisor' => App\Http\Middleware\UserIsRevisor::class,
             'writer' => App\Http\Middleware\UserIsWriter::class,
-            'admin.local'=> App\Http\Middleware\OnlyLocalAdmin::class
+            'admin.local'=> App\Http\Middleware\OnlyLocalAdmin::class,
+            'log.critical' => App\Http\Middleware\LogCriticalOperations::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -127,6 +127,15 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Canale dedicato per audit log delle operazioni critiche
+        'audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/audit.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 30, // Mantieni i log per 30 giorni
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];
