@@ -9,7 +9,7 @@ Questa challenge dimostra la vulnerabilità CSRF (Cross-Site Request Forgery) qu
 Mitigare la vulnerabilità CSRF sulle operazioni di gestione ruoli (setAdmin, setRevisor, setWriter) che erano implementate come richieste GET, rendendole suscettibili ad attacchi CSRF.
 
 ## 🔍 Analisi della Vulnerabilità
-
+ 
 ### Problema Originale
 
 Le seguenti rotte erano esposte come GET:
