@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller implements HasMiddleware
 {
@@ -53,10 +54,13 @@ class ArticleController extends Controller implements HasMiddleware
             'tags' => 'required'
         ]);
 
+        // Sanitizza il body rimuovendo tag HTML pericolosi
+        $sanitizedBody = $this->sanitizeHtml($request->body);
+
         $article = Article::create([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'body' => $request->body,
+            'body' => $sanitizedBody,
             'image' => $request->file('image')->store('public/images'),
             'category_id' => $request->category,
             'user_id' => Auth::user()->id,
@@ -77,6 +81,32 @@ class ArticleController extends Controller implements HasMiddleware
         }
 
         return redirect(route('homepage'))->with('message', 'Articolo creato con successo');
+    }
+    
+    /**
+     * Sanitizza l'HTML rimuovendo tag pericolosi per prevenire XSS
+     */
+    private function sanitizeHtml(string $html): string
+    {
+        // Rimuovi tutti i tag HTML tranne quelli sicuri
+        $allowedTags = '<p><br><strong><b><em><i><u><h1><h2><h3><h4><h5><h6><ul><ol><li><a><img>';
+        
+        // Strip tags pericolosi
+        $sanitized = strip_tags($html, $allowedTags);
+        
+        // Rimuovi attributi pericolosi da tutti i tag
+        $sanitized = preg_replace('/<([^>]+)>(.*?)<\/\1>/is', '', $sanitized);
+        
+        // Rimuovi event handlers (onclick, onerror, etc.)
+        $sanitized = preg_replace('/\s*on\w+\s*=\s*["\'][^"\']*["\']/i', '', $sanitized);
+        
+        // Rimuovi javascript: URLs
+        $sanitized = preg_replace('/javascript\s*:/i', '', $sanitized);
+        
+        // Rimuovi data: URLs (può contenere script)
+        $sanitized = preg_replace('/data\s*:\s*text\/html/i', '', $sanitized);
+        
+        return $sanitized;
     }
 
     /**
@@ -112,10 +142,13 @@ class ArticleController extends Controller implements HasMiddleware
             'tags' => 'required'
         ]);
 
+        // Sanitizza il body rimuovendo tag HTML pericolosi
+        $sanitizedBody = $this->sanitizeHtml($request->body);
+
         $article->update([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'body' => $request->body,
+            'body' => $sanitizedBody,
             'category_id' => $request->category,
             'slug' => Str::slug($request->title),
         ]);
