@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'writer' => App\Http\Middleware\UserIsWriter::class,
             'admin.local'=> App\Http\Middleware\OnlyLocalAdmin::class,
             'log.critical' => App\Http\Middleware\LogCriticalOperations::class,
+            'prevent.clickjacking' => App\Http\Middleware\PreventClickjacking::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

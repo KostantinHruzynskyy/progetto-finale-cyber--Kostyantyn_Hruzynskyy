@@ -6,9 +6,10 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\WriterController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\RevisorController;
+use App\Http\Controllers\ProfileController;
 
-// Route pubbliche con rate limiting globale (100 richieste al minuto per IP)
-Route::middleware('throttle:global')->group(function(){
+// Route pubbliche con rate limiting globale e protezione clickjacking
+Route::middleware(['throttle:global', 'prevent.clickjacking'])->group(function(){
     Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
     Route::get('/careers', [PublicController::class, 'careers'])->name('careers');
     Route::get('/articles/index', [ArticleController::class, 'index'])->name('articles.index');
@@ -59,4 +60,10 @@ Route::middleware(['log.critical','admin','admin.local'])->group(function(){
     Route::delete('/admin/delete/category/{category}', [AdminController::class, 'deleteCategory'])->name('admin.deleteCategory');
     Route::post('/admin/category/store', [AdminController::class, 'storeCategory'])->name('admin.storeCategory');
     Route::post('/admin/tag/store', [AdminController::class, 'storeTag'])->name('admin.storeTag');
+});
+
+// Route per il profilo utente (VULNERABILE a Mass Assignment)
+Route::middleware('auth')->group(function(){
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });

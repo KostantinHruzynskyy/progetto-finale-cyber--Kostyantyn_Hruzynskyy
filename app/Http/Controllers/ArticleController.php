@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
 
 class ArticleController extends Controller implements HasMiddleware
 {
@@ -29,6 +30,7 @@ class ArticleController extends Controller implements HasMiddleware
     public function index()
     {
         $articles = Article::where('is_accepted', true)->orderBy('created_at', 'desc')->get();
+        Gate::authorize('viewAny', Article::class);
         return view('articles.index', compact('articles'));
     }
 
@@ -53,6 +55,8 @@ class ArticleController extends Controller implements HasMiddleware
             'category' => 'required',
             'tags' => 'required'
         ]);
+
+        Gate::authorize('create', Article::class);
 
         // Sanitizza il body rimuovendo tag HTML pericolosi
         $sanitizedBody = $this->sanitizeHtml($request->body);
@@ -114,6 +118,7 @@ class ArticleController extends Controller implements HasMiddleware
      */
     public function show(Article $article)
     {
+        Gate::authorize('view', $article);
         return view('articles.show', compact('article'));
     }
 
@@ -141,6 +146,8 @@ class ArticleController extends Controller implements HasMiddleware
             'category' => 'required',
             'tags' => 'required'
         ]);
+
+        Gate::authorize('update', $article);
 
         // Sanitizza il body rimuovendo tag HTML pericolosi
         $sanitizedBody = $this->sanitizeHtml($request->body);
@@ -184,6 +191,8 @@ class ArticleController extends Controller implements HasMiddleware
      */
     public function destroy(Article $article)
     {
+        Gate::authorize('delete', $article);
+        
         foreach ($article->tags as $tag) {
             $article->tags()->detach($tag);
         }
