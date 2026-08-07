@@ -16,28 +16,28 @@
                 <td>
                     @switch($role)
                         @case('admin')
-                            <a href="{{route('admin.setAdmin', $user)}}" class="btn btn-secondary">Enable {{$role}}</a>
-                            {{-- <form action="{{route('admin.setAdmin', $user)}}" method="POST">
+                            {{-- Form protetto da CSRF - sostituisce il link vulnerabile in GET --}}
+                            <form action="{{route('admin.setAdmin', $user)}}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="btn btn-secondary">Enable {{$role}}</button>
-                            </form> --}}
+                            </form>
                             @break
                         @case('revisor')
-                        <a href="{{route('admin.setRevisor', $user)}}" class="btn btn-secondary">Enable {{$role}}</a>
-                        {{-- <form action="{{route('admin.setRevisor', $user)}}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-secondary">Enable {{$role}}</button>
-                        </form> --}}
-                        @break
+                            {{-- Form protetto da CSRF - sostituisce il link vulnerabile in GET --}}
+                            <form action="{{route('admin.setRevisor', $user)}}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-secondary">Enable {{$role}}</button>
+                            </form>
+                            @break
                         @case('writer')
-                        <a href="{{route('admin.setWriter', $user)}}" class="btn btn-secondary">Enable {{$role}}</a>
-                        {{-- <form action="{{route('admin.setWriter', $user)}}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-secondary">Enable {{$role}}</button>
-                        </form> --}}
+                            {{-- Form protetto da CSRF - sostituisce il link vulnerabile in GET --}}
+                            <form action="{{route('admin.setWriter', $user)}}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-secondary">Enable {{$role}}</button>
+                            </form>
                             @break
                     @endswitch
                 </td>
