@@ -7,18 +7,27 @@ use App\Http\Controllers\WriterController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\RevisorController;
 
-// Public routes
-Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
-Route::get('/careers', [PublicController::class, 'careers'])->name('careers');
-Route::post('/careers/submit', [PublicController::class, 'careersSubmit'])->name('careers.submit');
+// Route pubbliche con rate limiting globale (100 richieste al minuto per IP)
+Route::middleware('throttle:global')->group(function(){
+    Route::get('/', [PublicController::class, 'homepage'])->name('homepage');
+    Route::get('/careers', [PublicController::class, 'careers'])->name('careers');
+    Route::get('/articles/index', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/show/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/category/{category}', [ArticleController::class, 'byCategory'])->name('articles.byCategory');
+    Route::get('/articles/user/{user}', [ArticleController::class, 'byUser'])->name('articles.byUser');
+});
 
-Route::get('/articles/index', [ArticleController::class, 'index'])->name('articles.index');
-Route::get('/articles/show/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
-Route::get('/articles/category/{category}', [ArticleController::class, 'byCategory'])->name('articles.byCategory');
-Route::get('/articles/user/{user}', [ArticleController::class, 'byUser'])->name('articles.byUser');
-Route::get('/articles/search', [ArticleController::class, 'articleSearch'])->name('articles.search');
+// Route di ricerca con rate limiting specifico (30 richieste al minuto per IP)
+Route::middleware('throttle:search')->group(function(){
+    Route::get('/articles/search', [ArticleController::class, 'articleSearch'])->name('articles.search');
+});
 
-// Writer routes
+// Invio candidature con rate limiting specifico (5 richieste al minuto per IP)
+Route::middleware('throttle:careers')->group(function(){
+    Route::post('/careers/submit', [PublicController::class, 'careersSubmit'])->name('careers.submit');
+});
+
+// Route per (chi fa scrittori)
 Route::middleware('writer')->group(function(){
     Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles/store', [ArticleController::class, 'store'])->name('articles.store');
@@ -28,7 +37,7 @@ Route::middleware('writer')->group(function(){
     Route::delete('/articles/destroy/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
 
-// Revisor routes
+// Route per i revisori
 Route::middleware('revisor')->group(function(){
     Route::get('/revisor/dashboard', [RevisorController::class, 'dashboard'])->name('revisor.dashboard');
     Route::post('/revisor/{article}/accept', [RevisorController::class, 'acceptArticle'])->name('revisor.acceptArticle');
@@ -36,7 +45,7 @@ Route::middleware('revisor')->group(function(){
     Route::post('/revisor/{article}/undo', [RevisorController::class, 'undoArticle'])->name('revisor.undoArticle');
 });
 
-// Admin routes
+// Route per gli amministratori
 Route::middleware(['admin','admin.local'])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/{user}/set-admin', [AdminController::class, 'setAdmin'])->name('admin.setAdmin');
